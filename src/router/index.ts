@@ -47,7 +47,7 @@ export const constantRoutes: RouteConfig[] = [
     meta: { hidden: true },
     children: [
       {
-        path: '/redirect/:path*',
+        path: '/redirect/:path(.*)',
         component: () => import(/* webpackChunkName: "redirect" */ '@/views/redirect/index.vue')
       }
     ]
@@ -146,7 +146,7 @@ export const asyncRoutes: RouteConfig[] = [
   {
     path: '/permission',
     component: Layout,
-    redirect: '/permission/index',
+    redirect: '/permission/directive',
     meta: {
       title: 'permission',
       icon: 'lock',
@@ -426,17 +426,11 @@ export const asyncRoutes: RouteConfig[] = [
     ]
   },
   {
-    path: 'external-link',
-    component: Layout,
-    children: [
-      {
-        path: 'https://github.com/Armour/vue-typescript-admin-template',
-        meta: {
-          title: 'externalLink',
-          icon: 'link'
-        }
-      }
-    ]
+    path: 'https://github.com/Armour/vue-typescript-admin-template',
+    meta: {
+      title: 'externalLink',
+      icon: 'link'
+    }
   },
   {
     path: '*',

@@ -10,7 +10,7 @@
       :loading="downloadLoading"
       style="margin-bottom:20px;"
       type="primary"
-      icon="document"
+      icon="el-icon-document"
       @click="handleDownload"
     >
       Export Zip
@@ -18,7 +18,7 @@
     <el-table
       v-loading="listLoading"
       :data="list"
-      element-loading-text="拼命加载中"
+      element-loading-text="Loading..."
       border
       fit
       highlight-current-row
@@ -28,13 +28,13 @@
         label="ID"
         width="95"
       >
-        <template slot-scope="scope">
-          {{ scope.$index }}
+        <template slot-scope="{$index}">
+          {{ $index }}
         </template>
       </el-table-column>
       <el-table-column label="Title">
-        <template slot-scope="scope">
-          {{ scope.row.title }}
+        <template slot-scope="{row}">
+          {{ row.title }}
         </template>
       </el-table-column>
       <el-table-column
@@ -42,8 +42,8 @@
         align="center"
         width="180"
       >
-        <template slot-scope="scope">
-          <el-tag>{{ scope.row.author }}</el-tag>
+        <template slot-scope="{row}">
+          <el-tag>{{ row.author }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column
@@ -51,8 +51,8 @@
         align="center"
         width="115"
       >
-        <template slot-scope="scope">
-          {{ scope.row.pageviews }}
+        <template slot-scope="{row}">
+          {{ row.pageviews }}
         </template>
       </el-table-column>
       <el-table-column
@@ -60,9 +60,9 @@
         align="center"
         width="220"
       >
-        <template slot-scope="scope">
+        <template slot-scope="{row}">
           <i class="el-icon-time" />
-          <span>{{ scope.row.timestamp }}</span>
+          <span>{{ row.timestamp }}</span>
         </template>
       </el-table-column>
     </el-table>

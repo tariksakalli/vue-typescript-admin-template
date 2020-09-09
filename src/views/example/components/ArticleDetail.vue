@@ -202,6 +202,7 @@ export default class extends Vue {
       callback()
     }
   }
+
   private validateSourceUrl = (rule: any, value: string, callback: any) => {
     if (value) {
       if (isValidURL(value)) {
@@ -217,6 +218,7 @@ export default class extends Vue {
       callback()
     }
   }
+
   private postForm = Object.assign({}, defaultArticleData)
   private loading = false
   private userListOptions = []
@@ -226,6 +228,7 @@ export default class extends Vue {
     fullContent: [{ validator: this.validateRequire }],
     sourceURL: [{ validator: this.validateSourceUrl, trigger: 'blur' }]
   }
+
   private tempTagView?: ITagView
   private tinymceActive = true
 
@@ -253,8 +256,6 @@ export default class extends Vue {
     if (this.isEdit) {
       const id = this.$route.params && this.$route.params.id
       this.fetchData(parseInt(id))
-    } else {
-      this.postForm = Object.assign({}, defaultArticleData)
     }
     // Why need to make a copy of this.$route here?
     // Because if you enter this page and quickly switch tag, may be in the execution of this.setTagsViewTitle function, this.$route is no longer pointing to the current page

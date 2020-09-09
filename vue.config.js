@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require('path')
 
 // If your port is set to 80,
@@ -18,6 +19,7 @@ module.exports = {
       warnings: false,
       errors: true
     },
+    progress: false,
     proxy: {
       // change xxx-api/login => /mock-api/v1/login
       // detail: https://cli.vuejs.org/config/#devserver-proxy
@@ -52,11 +54,24 @@ module.exports = {
     // it can be accessed in index.html to inject the correct title.
     config.set('name', name)
 
+    // it can improve the speed of the first screen, it is recommended to turn on preload
+    config.plugin('preload').tap(() => [
+      {
+        rel: 'preload',
+        // to ignore runtime.js
+        // https://github.com/vuejs/vue-cli/blob/dev/packages/@vue/cli-service/lib/config/app.js#L171
+        fileBlacklist: [/\.map$/, /hot-update\.js$/, /runtime\..*\.js$/],
+        include: 'initial'
+      }
+    ])
+
     // https://webpack.js.org/configuration/devtool/#development
-    config
-      .when(process.env.NODE_ENV === 'development',
-        config => config.devtool('cheap-source-map')
-      )
+    // Change development env source map if you want.
+    // The default in vue-cli is 'eval-cheap-module-source-map'.
+    // config
+    //   .when(process.env.NODE_ENV === 'development',
+    //     config => config.devtool('eval-cheap-source-map')
+    //   )
 
     config
       .when(process.env.NODE_ENV !== 'development',
@@ -85,6 +100,7 @@ module.exports = {
                 }
               }
             })
+          // https://webpack.js.org/configuration/optimization/#optimizationruntimechunk
           config.optimization.runtimeChunk('single')
         }
       )

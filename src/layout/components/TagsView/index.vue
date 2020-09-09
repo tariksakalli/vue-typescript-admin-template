@@ -6,6 +6,7 @@
     <scroll-pane
       ref="scrollPane"
       class="tags-view-wrapper"
+      @scroll="handleScroll"
     >
       <router-link
         v-for="tag in visitedViews"
@@ -15,12 +16,12 @@
         :to="{path: tag.path, query: tag.query, fullPath: tag.fullPath}"
         tag="span"
         class="tags-view-item"
-        @click.middle.native="closeSelectedTag(tag)"
+        @click.middle.native="!isAffix(tag)?closeSelectedTag(tag):''"
         @contextmenu.prevent.native="openMenu(tag, $event)"
       >
         {{ $t('route.' + tag.meta.title) }}
         <span
-          v-if="!tag.meta.affix"
+          v-if="!isAffix(tag)"
           class="el-icon-close"
           @click.prevent.stop="closeSelectedTag(tag)"
         />
@@ -35,7 +36,7 @@
         {{ $t('tagsView.refresh') }}
       </li>
       <li
-        v-if="!(selectedTag.meta&&selectedTag.meta.affix)"
+        v-if="!isAffix(selectedTag)"
         @click="closeSelectedTag(selectedTag)"
       >
         {{
@@ -54,7 +55,7 @@
 <script lang="ts">
 import path from 'path'
 import { Component, Vue, Watch } from 'vue-property-decorator'
-import VueRouter, { Route, RouteRecord, RouteConfig } from 'vue-router'
+import { RouteConfig } from 'vue-router'
 import { PermissionModule } from '@/store/modules/permission'
 import { TagsViewModule, ITagView } from '@/store/modules/tags-view'
 import ScrollPane from './ScrollPane.vue'
@@ -66,9 +67,9 @@ import ScrollPane from './ScrollPane.vue'
   }
 })
 export default class extends Vue {
-  private visible: boolean = false
-  private top: number = 0
-  private left: number = 0
+  private visible = false
+  private top = 0
+  private left = 0
   private selectedTag: ITagView = {}
   private affixTags: ITagView[] = []
 
@@ -102,6 +103,10 @@ export default class extends Vue {
 
   private isActive(route: ITagView) {
     return route.path === this.$route.path
+  }
+
+  private isAffix(tag: ITagView) {
+    return tag.meta && tag.meta.affix
   }
 
   private filterAffixTags(routes: RouteConfig[], basePath = '/') {
@@ -178,7 +183,9 @@ export default class extends Vue {
   }
 
   private closeOthersTags() {
-    this.$router.push(this.selectedTag)
+    if (this.selectedTag.fullPath !== this.$route.path && this.selectedTag.fullPath !== undefined) {
+      this.$router.push(this.selectedTag.fullPath)
+    }
     TagsViewModule.delOthersViews(this.selectedTag)
     this.moveToCurrentTag()
   }
@@ -193,8 +200,8 @@ export default class extends Vue {
 
   private toLastView(visitedViews: ITagView[], view: ITagView) {
     const latestView = visitedViews.slice(-1)[0]
-    if (latestView) {
-      this.$router.push(latestView)
+    if (latestView !== undefined && latestView.fullPath !== undefined) {
+      this.$router.push(latestView.fullPath)
     } else {
       // Default redirect to the home page if there is no tags-view, adjust it if you want
       if (view.name === 'Dashboard') {
@@ -225,6 +232,10 @@ export default class extends Vue {
   private closeMenu() {
     this.visible = false
   }
+
+  private handleScroll() {
+    this.closeMenu()
+  }
 }
 </script>
 
@@ -254,7 +265,6 @@ export default class extends Vue {
     }
   }
 }
-
 </style>
 <style lang="scss" scoped>
 .tags-view-container {
@@ -262,7 +272,7 @@ export default class extends Vue {
   width: 100%;
   background: #fff;
   border-bottom: 1px solid #d8dce5;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .12), 0 0 3px 0 rgba(0, 0, 0, .04);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 0 3px 0 rgba(0, 0, 0, 0.04);
 
   .tags-view-wrapper {
     .tags-view-item {
@@ -317,7 +327,7 @@ export default class extends Vue {
     font-size: 12px;
     font-weight: 400;
     color: #333;
-    box-shadow: 2px 2px 3px 0 rgba(0, 0, 0, .3);
+    box-shadow: 2px 2px 3px 0 rgba(0, 0, 0, 0.3);
 
     li {
       margin: 0;
